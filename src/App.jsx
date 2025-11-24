@@ -87,53 +87,57 @@ function App() {
   }
 
   const handleSearch = async () => {
-  if (!song.trim() || !artist.trim()) {
-    alert('Please enter both song and artist name');
-    return;
-  }
+    if (!song.trim() || !artist.trim()) {
+      alert('Please enter both song and artist name')
+      return
+    }
 
-  setLoading(true);
-  setSafeData(null);
-  setRawJSON(null);
+    setLoading(true)
+    setSafeData(null)
+    setRawJSON(null)
 
-  try {
-    // API POST request
-    const response = await fetch('https://soundfacts-endpoint.vercel.app/api/soundfacts', {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({
-        song: song.trim(),
-        artist: artist.trim()
+    try {
+      // POST request to the API with song and artist
+      const response = await fetch('https://soundfacts-endpoint.vercel.app/api/soundfacts', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          song: song.trim(),
+          artist: artist.trim()
+        })
       })
-    });
-    console.log(response)
+      
+      if (!response.ok) {
+        throw new Error('Failed to fetch from API')
+      }
 
-    const apiResponse = await response.json();
-    setRawJSON(apiResponse);
+      const apiResponse = await response.json()
+      setRawJSON(apiResponse)
 
-    // If backend reports an error
-    if (apiResponse.error) {
-      setSafeData(ERROR_JSON);
-      return;
+      // Check if response is an error
+      if (apiResponse.error) {
+        setSafeData(ERROR_JSON)
+        setLoading(false)
+        return
+      }
+
+      // Validate the API response
+      if (validateSoundFactsResponse(apiResponse)) {
+        setSafeData(apiResponse)
+      } else {
+        // Validation failed
+        setSafeData(ERROR_JSON)
+      }
+    } catch (err) {
+      console.error('Error:', err)
+      setSafeData(ERROR_JSON)
+      setRawJSON(null)
+    } finally {
+      setLoading(false)
     }
-
-    // Validate final structured result
-    if (validateSoundFactsResponse(apiResponse)) {
-      setSafeData(apiResponse);
-    } else {
-      setSafeData(ERROR_JSON);
-    }
-
-  } catch (err) {
-    console.error("API Error:", err);
-    setSafeData(ERROR_JSON);
-  } finally {
-    setLoading(false);
   }
-};
-
 
   const handleKeyPress = (e) => {
     if (e.key === 'Enter') {
@@ -199,6 +203,9 @@ function App() {
             <div>
               <h3>Analysis Failed</h3>
               <p>{safeData.message}</p>
+              <p style={{ fontSize: '0.85rem', marginTop: '0.5rem', color: '#fecaca' }}>
+                If you see a network error, the backend needs to enable CORS and handle OPTIONS requests.
+              </p>
             </div>
           </div>
         )}
