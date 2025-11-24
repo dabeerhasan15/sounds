@@ -2,24 +2,7 @@ import { useState } from 'react'
 import './App.css'
 
 function App() {
-  const searchSongInData = (allSongs, searchSong, searchArtist) => {
-    if (!allSongs || !Array.isArray(allSongs)) return null
-
-    const songLower = searchSong.toLowerCase().trim()
-    const artistLower = searchArtist.toLowerCase().trim()
-
-    // Search for matching song and artist
-    const foundSong = allSongs.find(item => {
-      const itemSongLower = (item.song || '').toLowerCase().trim()
-      const itemArtistLower = (item.artist || '').toLowerCase().trim()
-      
-      return itemSongLower === songLower && itemArtistLower === artistLower
-    })
-
-    return foundSong || null
-  }
-
-  const [song, setSong] = useState('')
+const [song, setSong] = useState('')
   const [artist, setArtist] = useState('')
   const [loading, setLoading] = useState(false)
   const [safeData, setSafeData] = useState(null)
