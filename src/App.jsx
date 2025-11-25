@@ -99,7 +99,7 @@ const [song, setSong] = useState('')
     try {
       // POST request to the API with song and artist
       const response = await fetch('https://soundfacts-endpoint.vercel.app/api/soundfacts', {
-        method: 'OPTIONS',
+        method: 'POST',
         headers: {
           'Content-Type': 'application/json'
         },
